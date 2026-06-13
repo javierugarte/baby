@@ -364,22 +364,11 @@
     const urlGender  = new URLSearchParams(location.search).get('gender');
     const BABY_GENDER = ['boy','girl'].includes(urlGender) ? urlGender : GENDER_FALLBACK;
 
-    // Insertar capa de revelado en el último círculo si está configurado
-    if (BABY_GENDER !== 'unknown') {
-      const isGirl = BABY_GENDER === 'girl';
-      const lastCell = document.getElementById('last-cell');
-
-      // Ocultar icono por defecto del último círculo
-      document.getElementById('last-icon').style.display = 'none';
-
-      const layer = document.createElement('div');
-      layer.className = `gender-reveal-layer ${BABY_GENDER}`;
-      layer.innerHTML = `
-        <span class="g-icon">${isGirl ? '👧' : '👦'}</span>
-        <span class="g-label">${isGirl ? '¡ES NIÑA!' : '¡ES NIÑO!'}</span>
-      `;
-      // Insertar antes del canvas para que quede detrás
-      lastCell.insertBefore(layer, lastCell.querySelector('canvas'));
+    // Cambiar el icono del último círculo según el género configurado:
+    //   'boy'  → icon8.png     (zapatilla azul - ya por defecto)
+    //   'girl' → icon8_girl.png (botita rosa de la hoja de niña)
+    if (BABY_GENDER === 'girl') {
+      document.getElementById('last-icon').src = 'icons/icon8_girl.png';
     }
 
     // ─── Canvas setup ────────────────────────────────────────────
