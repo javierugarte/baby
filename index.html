@@ -10,17 +10,25 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      background: linear-gradient(135deg, #fce4ec 0%, #e8f4fd 100%);
+    html {
+      /* touch-action: none en html + body bloquea scroll y zoom del navegador */
+      touch-action: none;
+      overscroll-behavior: none;
+      height: 100%;
     }
 
     body {
+      /* position: fixed evita el "bounce" de iOS Safari y cualquier desplazamiento */
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      touch-action: none;
+      overscroll-behavior: none;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #fce4ec 0%, #e8f4fd 100%);
     }
 
     /* ─── Game wrapper ─────────────────────────────── */
@@ -37,6 +45,7 @@
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
+      -webkit-touch-callout: none; /* evita menú contextual largo en iOS */
       border-radius: 12px;
     }
 
@@ -45,7 +54,7 @@
       position: absolute;
       border-radius: 50%;
       overflow: hidden;
-      /* Cards are injected by JS */
+      touch-action: none; /* bloquea scroll/zoom dentro del círculo */
     }
 
     /* Gender reveal layer (only circle 8 when gender is configured) */
@@ -322,7 +331,9 @@
         const { x, y } = xy(e);
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
-        ctx.arc(x, y, radiusPx * dpr * 0.24, 0, Math.PI * 2);
+        // Pincel mínimo de 22 px CSS para que sea cómodo con el dedo
+        const brushR = Math.max(22 * dpr, radiusPx * dpr * 0.42);
+        ctx.arc(x, y, brushR, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalCompositeOperation = 'source-over';
         sampleReveal(canvas, index, radiusPx * dpr);
@@ -420,6 +431,24 @@
       }
       requestAnimationFrame(tick);
     }
+
+    // ─── Bloquear scroll / zoom en toda la página ─────────────────
+    // Necesario para iOS 10+ donde user-scalable=no se ignora
+    document.addEventListener('touchstart', e => {
+      if (e.touches.length > 1) e.preventDefault(); // bloquea pinch-zoom
+    }, { passive: false });
+
+    document.addEventListener('touchmove', e => {
+      e.preventDefault(); // bloquea cualquier desplazamiento de página
+    }, { passive: false });
+
+    // Evitar doble-tap zoom en el juego
+    let lastTap = 0;
+    game.addEventListener('touchend', e => {
+      const now = Date.now();
+      if (now - lastTap < 300) e.preventDefault();
+      lastTap = now;
+    }, { passive: false });
 
     // ─── Init ──────────────────────────────────────────────────────
     function init() { buildCards([]); }
