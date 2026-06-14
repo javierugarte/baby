@@ -5,24 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#d4a8c8">
+  <meta name="theme-color" content="#c8a0d0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-  <title>¿Niño o Niña? — Rasca y Descubre</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+  <title>¿Niño o Niña?</title>
   <style>
     *, *::before, *::after {
-      margin: 0; padding: 0;
-      box-sizing: border-box;
+      margin: 0; padding: 0; box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
-    html {
-      touch-action: none;
-      overscroll-behavior: none;
-      height: 100%;
-    }
+    html { touch-action: none; overscroll-behavior: none; height: 100%; }
 
+    /* ══════════════════════════════════════
+       FONDO ANIMADO
+    ══════════════════════════════════════ */
     body {
       position: fixed; inset: 0;
       overflow: hidden;
@@ -30,106 +28,94 @@
       overscroll-behavior: none;
       display: flex;
       flex-direction: column;
-      /* Fondo degradado azul → rosa */
-      background: linear-gradient(160deg, #a8d4ec 0%, #c8a8d8 40%, #e8a8bc 100%);
       -webkit-user-select: none; user-select: none;
-      font-family: -apple-system, 'Segoe UI', sans-serif;
+      font-family: 'Nunito', -apple-system, sans-serif;
+      /* Fondo base: degradado suave */
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(180,210,255,0.9) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(255,180,210,0.9) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(220,185,255,0.5) 0%, transparent 65%),
+        linear-gradient(145deg, #b8d4f0 0%, #d8b8e8 50%, #f0b8d0 100%);
+    }
+
+    /* Capa de formas flotantes (corazones, estrellas) */
+    .bg-layer {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      font-style: normal;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: .55; }
+      90%  { opacity: .55; }
+      100% { transform: translateY(-15vh) rotate(360deg); opacity: 0; }
     }
 
     /* ══════════════════════════════════════
        CABECERA
     ══════════════════════════════════════ */
     .header {
+      position: relative; z-index: 1;
       flex-shrink: 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 1.5vmin 3vmin 1vmin;
-      background: rgba(255,250,248,0.55);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.4);
-    }
-
-    .balloon {
-      height: 9vmin;
-      max-height: 60px;
-      object-fit: contain;
-      flex-shrink: 0;
-      mix-blend-mode: multiply;
-    }
-
-    .header-center {
-      flex: 1;
+      justify-content: center;
+      padding: 2vmin 4vmin 1.5vmin;
       text-align: center;
-      padding: 0 2vmin;
-      line-height: 1;
+      /* Cristal esmerilado */
+      background: rgba(255,250,255,0.40);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
     }
 
     .title {
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(1.3rem, 6.5vmin, 3rem);
+      font-size: clamp(1.5rem, 7vmin, 3.2rem);
+      line-height: 1;
       white-space: nowrap;
     }
-    .t-q    { color: #7a5030; }
-    .t-nino { color: #1a70c0; }
-    .t-o    { color: #7a5030; }
-    .t-nina { color: #c02060; }
+    .t-q    { color: #7a4a28; }
+    .t-nino { color: #1860b0; }
+    .t-o    { color: #7a4a28; }
+    .t-nina { color: #b02058; }
 
     .subtitle {
-      font-size: clamp(0.38rem, 1.6vmin, 0.65rem);
-      letter-spacing: 0.15em;
-      color: #7a5030;
-      font-weight: 700;
-      margin-top: 0.5vmin;
+      font-size: clamp(0.38rem, 1.6vmin, 0.62rem);
+      letter-spacing: 0.16em;
+      color: #7a4a28;
+      font-weight: 800;
+      margin-top: 0.6vmin;
+      opacity: 0.85;
     }
 
-    /* En landscape el subtítulo ocupa demasiado espacio — lo ocultamos */
     @media (orientation: landscape) {
       .subtitle { display: none; }
-      .balloon  { height: 7vmin; max-height: 48px; }
     }
 
     /* ══════════════════════════════════════
-       ZONA PRINCIPAL (GRID + MASCOTAS)
+       GRID PRINCIPAL
     ══════════════════════════════════════ */
     .main {
-      flex: 1;
-      min-height: 0;
+      position: relative; z-index: 1;
+      flex: 1; min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.8vmin;
-      gap: 1vmin;
+      padding: 2vmin;
     }
 
-    /* Mascotas: solo visibles en landscape, en los lados del grid */
-    .mascot {
-      display: none;
-      flex-shrink: 0;
-      object-fit: contain;
-      object-position: bottom center;
-      mix-blend-mode: multiply;
-    }
-    @media (orientation: landscape) {
-      .mascot {
-        display: block;
-        width: 9vw;
-        max-width: 80px;
-        height: 100%;
-        max-height: 200px;
-      }
-    }
-
-    /* ══════════════════════════════════════
-       GRID DE CÍRCULOS
-       Portrait → 2 col × 4 fil
-       Landscape → 4 col × 2 fil
-       Las variables --cell y --gap las calcula JS
-    ══════════════════════════════════════ */
     .circles-grid {
       display: grid;
-      /* Valor por defecto; JS lo sobreescribe con --cell y --cols */
       grid-template-columns: repeat(var(--cols, 2), var(--cell, 140px));
       gap: var(--gap, 8px);
     }
@@ -145,12 +131,11 @@
       overflow: hidden;
       touch-action: none;
       box-shadow:
-        0 5px 14px rgba(0,0,0,0.26),
-        inset 0 2px 5px rgba(255,255,255,0.35),
-        inset 0 -2px 5px rgba(0,0,0,0.10);
+        0 6px 18px rgba(0,0,0,0.28),
+        inset 0 2px 6px rgba(255,255,255,0.40),
+        inset 0 -2px 6px rgba(0,0,0,0.12);
     }
 
-    /* Imagen del icono (fondo) */
     .icon-img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
@@ -159,19 +144,6 @@
       -webkit-user-drag: none;
     }
 
-    /* Capa de revelado de género (último círculo) */
-    .gender-layer {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 4%;
-    }
-    .gender-layer.boy  { background: radial-gradient(circle at 38% 35%, #90caf9, #1565c0); }
-    .gender-layer.girl { background: radial-gradient(circle at 38% 35%, #f48fb1, #880e4f); }
-    .g-icon  { font-size: 2.2em; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
-    .g-label { font-size: .6em; font-weight: 900; color: #fff; letter-spacing: .05em; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
-
-    /* Canvas de rascado (encima de todo) */
     .scratch {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
@@ -184,29 +156,120 @@
     ══════════════════════════════════════ */
     #confetti {
       display: none; position: fixed; inset: 0;
-      pointer-events: none; z-index: 999;
+      pointer-events: none; z-index: 50;
     }
     #confetti.active { display: block; }
+
+    /* ══════════════════════════════════════
+       MENSAJE DE REVELADO
+    ══════════════════════════════════════ */
+    #reveal-msg {
+      display: none;
+      position: fixed; inset: 0;
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0;
+      /* Fondo cristal */
+      background: rgba(10, 5, 20, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      cursor: pointer;
+    }
+
+    #reveal-msg.show {
+      display: flex;
+      animation: revealFadeIn 0.5s ease forwards;
+    }
+
+    @keyframes revealFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2vmin;
+      animation: revealPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+    }
+
+    @keyframes revealPop {
+      from { transform: scale(0.3) translateY(40px); opacity: 0; }
+      to   { transform: scale(1)   translateY(0);    opacity: 1; }
+    }
+
+    .reveal-emoji {
+      font-size: clamp(4rem, 18vmin, 9rem);
+      filter: drop-shadow(0 4px 20px rgba(0,0,0,0.4));
+      animation: emojiFloat 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes emojiFloat {
+      from { transform: translateY(0)   rotate(-3deg); }
+      to   { transform: translateY(-8%) rotate(3deg);  }
+    }
+
+    .reveal-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(3rem, 14vmin, 7rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      text-align: center;
+      filter: drop-shadow(0 3px 12px rgba(0,0,0,0.5));
+    }
+
+    .reveal-text.boy  { color: #60b4ff; }
+    .reveal-text.girl { color: #ff80b0; }
+    .reveal-text.unknown { color: #ffd060; }
+
+    .reveal-hint {
+      font-size: clamp(0.7rem, 2.5vmin, 1rem);
+      color: rgba(255,255,255,0.55);
+      margin-top: 2vmin;
+      letter-spacing: 0.08em;
+    }
+
+    /* Partículas de color detrás del texto */
+    .reveal-glow {
+      position: absolute;
+      width: 80vmin; height: 80vmin;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.35;
+      animation: glowPulse 2s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .reveal-glow.boy  { background: radial-gradient(circle, #4090ff, #0040c0); }
+    .reveal-glow.girl { background: radial-gradient(circle, #ff60a0, #c01060); }
+    .reveal-glow.unknown { background: radial-gradient(circle, #ffd060, #ff9000); }
+
+    @keyframes glowPulse {
+      from { transform: scale(0.9); opacity: 0.3; }
+      to   { transform: scale(1.1); opacity: 0.45; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- Capa de formas flotantes decorativas (JS las genera) -->
+  <div class="bg-layer" id="bg-layer" aria-hidden="true"></div>
+
   <!-- Cabecera -->
   <header class="header">
-    <img src="icons/balloon_blue.png" class="balloon" alt="">
-    <div class="header-center">
+    <div>
       <div class="title">
-        <span class="t-q">¿&nbsp;</span><span class="t-nino">Niño</span><span class="t-o">&nbsp;o&nbsp;</span><span class="t-nina">Niña</span><span class="t-q">&nbsp;?</span>
+        <span class="t-q">¿&thinsp;</span><span class="t-nino">Niño</span><span class="t-o">&thinsp;o&thinsp;</span><span class="t-nina">Niña</span><span class="t-q">&thinsp;?</span>
       </div>
       <p class="subtitle">— RASCA Y DESCUBRE EL SEXO DEL BEBÉ —</p>
     </div>
-    <img src="icons/balloon_pink.png" class="balloon" alt="">
   </header>
 
-  <!-- Zona principal -->
+  <!-- Cuadrícula -->
   <div class="main">
-    <img src="icons/bear.png"  class="mascot" alt="">
-
     <div class="circles-grid" id="grid">
       <div class="circle-cell"><img src="icons/icon1.png" class="icon-img"><canvas class="scratch"></canvas></div>
       <div class="circle-cell"><img src="icons/icon2.png" class="icon-img"><canvas class="scratch"></canvas></div>
@@ -215,34 +278,61 @@
       <div class="circle-cell"><img src="icons/icon5.png" class="icon-img"><canvas class="scratch"></canvas></div>
       <div class="circle-cell"><img src="icons/icon6.png" class="icon-img"><canvas class="scratch"></canvas></div>
       <div class="circle-cell"><img src="icons/icon7.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <!-- Último círculo: configurable niño/niña -->
       <div class="circle-cell" id="last-cell">
         <img src="icons/icon8.png" class="icon-img" id="last-icon">
         <canvas class="scratch"></canvas>
       </div>
     </div>
-
-    <img src="icons/bunny.png" class="mascot" alt="">
   </div>
 
+  <!-- Confeti -->
   <canvas id="confetti"></canvas>
+
+  <!-- Mensaje de revelado -->
+  <div id="reveal-msg" role="dialog" aria-modal="true" onclick="dismissReveal()">
+    <div class="reveal-glow" id="reveal-glow"></div>
+    <div class="reveal-card">
+      <div class="reveal-emoji" id="reveal-emoji"></div>
+      <div class="reveal-text" id="reveal-text"></div>
+      <p class="reveal-hint">Toca para cerrar</p>
+    </div>
+  </div>
 
   <script>
   // ═══════════════════════════════════════════════════════════
-  //  ✏️  GÉNERO DEL BEBÉ
-  //  Cambia 'unknown' por 'boy' o 'girl',
-  //  o usa la URL: ?gender=boy  /  ?gender=girl
+  //  ✏️  CONFIGURACIÓN DEL GÉNERO
+  //  Cambia 'unknown' → 'boy' o 'girl',
+  //  o usa URL: ?gender=boy  /  ?gender=girl
   // ═══════════════════════════════════════════════════════════
   const GENDER_FALLBACK = 'unknown';
   // ═══════════════════════════════════════════════════════════
 
-  const urlGender  = new URLSearchParams(location.search).get('gender');
+  const urlGender   = new URLSearchParams(location.search).get('gender');
   const BABY_GENDER = ['boy','girl'].includes(urlGender) ? urlGender : GENDER_FALLBACK;
 
-  // Aplicar icono de niña si está configurado
   if (BABY_GENDER === 'girl') {
     document.getElementById('last-icon').src = 'icons/icon8_girl.png';
   }
+
+  // ─── Formas flotantes del fondo ───────────────────────────
+  (function buildBg() {
+    const layer  = document.getElementById('bg-layer');
+    const shapes = ['❤️','💙','⭐','✨','💫','🌸','💕','🌟','💝','💎'];
+    const count  = 22;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('span');
+      el.className = 'shape';
+      el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+      const size = 12 + Math.random() * 22;
+      el.style.cssText = [
+        `left:${Math.random() * 100}%`,
+        `font-size:${size}px`,
+        `animation-duration:${8 + Math.random() * 14}s`,
+        `animation-delay:${-Math.random() * 15}s`,
+      ].join(';');
+      layer.appendChild(el);
+    }
+  })();
 
   // ─── Layout dinámico ──────────────────────────────────────
   const root = document.documentElement;
@@ -253,29 +343,21 @@
     const cols = landscape ? 4 : 2;
     const rows = landscape ? 2 : 4;
 
-    // Espacio disponible (descontando cabecera y padding)
-    const header  = document.querySelector('.header');
-    const headerH = header.getBoundingClientRect().height;
-    const PAD     = Math.min(14, window.innerWidth * 0.025);
+    const headerH = document.querySelector('.header').getBoundingClientRect().height;
+    const PAD = Math.min(14, window.innerWidth * 0.025);
 
-    let availW = window.innerWidth  - PAD * 2;
-    let availH = window.innerHeight - headerH - PAD * 2;
+    const availW = window.innerWidth  - PAD * 2;
+    const availH = window.innerHeight - headerH - PAD * 2;
+    const GAP    = Math.round(Math.max(5, Math.min(12, availW * 0.022)));
 
-    // En landscape, las mascotas consumen ~9vw en cada lado
-    if (landscape) availW -= Math.min(160, window.innerWidth * 0.18) + PAD;
-
-    const GAP = Math.round(Math.max(5, Math.min(12, availW * 0.025)));
-
-    // Tamaño de celda = el menor de: ancho disponible÷cols, alto disponible÷filas
-    const byW = (availW - GAP * (cols - 1)) / cols;
-    const byH = (availH - GAP * (rows - 1)) / rows;
+    const byW  = (availW - GAP * (cols - 1)) / cols;
+    const byH  = (availH - GAP * (rows - 1)) / rows;
     const cell = Math.floor(Math.min(byW, byH));
 
     root.style.setProperty('--cols', cols);
     root.style.setProperty('--cell', cell + 'px');
     root.style.setProperty('--gap',  GAP  + 'px');
 
-    // Re-pintar canvases con nuevo tamaño
     requestAnimationFrame(() => {
       canvases.forEach(c => { if (!c._done) initCanvas(c, cell); });
     });
@@ -285,52 +367,39 @@
   const canvases = [...document.querySelectorAll('.scratch')];
 
   function initCanvas(canvas, cell) {
-    const size = Math.round(cell * dpr);
-    canvas.width  = size;
-    canvas.height = size;
+    const sz = Math.round(cell * dpr);
+    canvas.width = sz; canvas.height = sz;
     drawGold(canvas);
   }
 
   function drawGold(canvas) {
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
-    const cx = W / 2, cy = H / 2, r = W / 2;
-
+    const cx = W/2, cy = H/2, r = W/2;
     ctx.clearRect(0, 0, W, H);
 
-    // Degradado dorado con iluminación superior-izquierda
-    const g = ctx.createRadialGradient(cx * .65, cy * .60, r * .03, cx, cy, r);
+    const g = ctx.createRadialGradient(cx*.65, cy*.60, r*.03, cx, cy, r);
     g.addColorStop(0.00, '#FFFAAA');
     g.addColorStop(0.18, '#FFE000');
     g.addColorStop(0.45, '#FFB300');
     g.addColorStop(0.75, '#E07800');
     g.addColorStop(1.00, '#7A4500');
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
 
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = g;
-    ctx.fill();
-
-    // Brillo
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(cx * .64, cy * .58, r * .26, r * .16, -.6, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,.55)';
-    ctx.fill();
+    ctx.ellipse(cx*.64, cy*.58, r*.26, r*.16, -.6, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,.56)'; ctx.fill();
     ctx.restore();
 
-    // Borde interior oscuro (relieve)
-    ctx.beginPath();
-    ctx.arc(cx, cy, r - dpr, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(80,35,0,.18)';
-    ctx.lineWidth = dpr * 2;
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, r-dpr, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(80,35,0,.20)';
+    ctx.lineWidth = dpr*2; ctx.stroke();
 
-    // Estrella decorativa
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(80,35,0,.40)';
-    ctx.font = `bold ${r * .44}px sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(80,35,0,.42)';
+    ctx.font = `bold ${r*.44}px sans-serif`;
     ctx.fillText('✦', cx, cy);
   }
 
@@ -341,10 +410,7 @@
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       const s = e.touches ? e.touches[0] : e;
-      return {
-        x: (s.clientX - rect.left) * dpr,
-        y: (s.clientY - rect.top)  * dpr,
-      };
+      return { x:(s.clientX-rect.left)*dpr, y:(s.clientY-rect.top)*dpr };
     }
 
     function erase(e) {
@@ -352,47 +418,64 @@
       e.preventDefault();
       const { x, y } = getPos(e);
       const r = canvas.width / 2;
-      // Pincel: mínimo 22px CSS, o 42% del radio
-      const brushR = Math.max(22 * dpr, r * .42);
+      const brushR = Math.max(22*dpr, r*.42);
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(x, y, brushR, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(x, y, brushR, 0, Math.PI*2); ctx.fill();
       ctx.globalCompositeOperation = 'source-over';
       checkReveal(canvas, r);
     }
 
-    canvas.addEventListener('mousedown',  e => { active = true;  erase(e); });
+    canvas.addEventListener('mousedown',  e => { active=true; erase(e); });
     canvas.addEventListener('mousemove',  erase);
-    canvas.addEventListener('mouseup',    () => active = false);
-    canvas.addEventListener('mouseleave', () => active = false);
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); active = true;  erase(e); }, { passive: false });
-    canvas.addEventListener('touchmove',  e => { e.preventDefault(); erase(e); },                 { passive: false });
-    canvas.addEventListener('touchend',   () => active = false);
+    canvas.addEventListener('mouseup',    () => active=false);
+    canvas.addEventListener('mouseleave', () => active=false);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); active=true; erase(e); }, {passive:false});
+    canvas.addEventListener('touchmove',  e => { e.preventDefault(); erase(e); },               {passive:false});
+    canvas.addEventListener('touchend',   () => active=false);
   }
 
   function checkReveal(canvas, r) {
     if (canvas._done) return;
     const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-    const cx = W / 2, cy = H / 2;
-    const data = ctx.getImageData(0, 0, W, H).data;
-    let inside = 0, gone = 0;
-    for (let i = 0; i < data.length; i += 16) {
-      const pi = i >> 2;
-      const px = pi % W, py = (pi / W) | 0;
-      if ((px - cx) ** 2 + (py - cy) ** 2 <= r * r) {
-        inside++;
-        if (data[i + 3] < 128) gone++;
-      }
+    const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
+    const data = ctx.getImageData(0,0,W,H).data;
+    let inside=0, gone=0;
+    for (let i=0; i<data.length; i+=16) {
+      const pi=i>>2, px=pi%W, py=(pi/W)|0;
+      if ((px-cx)**2+(py-cy)**2<=r*r) { inside++; if (data[i+3]<128) gone++; }
     }
-    if (inside > 0 && gone / inside > .55) {
+    if (inside>0 && gone/inside>.55) {
       canvas._done = true;
       canvas.style.transition = 'opacity .55s ease';
       canvas.style.opacity = '0';
-      setTimeout(() => { canvas.style.display = 'none'; }, 560);
-      if (canvases.every(c => c._done)) celebrate();
+      setTimeout(() => canvas.style.display='none', 560);
+      if (canvases.every(c => c._done)) {
+        // Confeti inmediato + mensaje tras 2.5 s
+        celebrate();
+        setTimeout(showReveal, 2500);
+      }
     }
+  }
+
+  // ─── Mensaje de revelado ──────────────────────────────────
+  function showReveal() {
+    const cfg = {
+      boy:     { emoji:'👦', text:'¡Es Niño!',  cls:'boy'  },
+      girl:    { emoji:'👧', text:'¡Es Niña!',  cls:'girl' },
+      unknown: { emoji:'🎉', text:'¡Felicidades!', cls:'unknown' },
+    }[BABY_GENDER];
+
+    document.getElementById('reveal-emoji').textContent = cfg.emoji;
+    document.getElementById('reveal-text').textContent  = cfg.text;
+    document.getElementById('reveal-text').className    = 'reveal-text ' + cfg.cls;
+    document.getElementById('reveal-glow').className    = 'reveal-glow '  + cfg.cls;
+
+    const msg = document.getElementById('reveal-msg');
+    msg.classList.add('show');
+  }
+
+  function dismissReveal() {
+    document.getElementById('reveal-msg').classList.remove('show');
   }
 
   // ─── Init ─────────────────────────────────────────────────
@@ -407,60 +490,55 @@
     resizeTimer = setTimeout(updateLayout, 150);
   });
 
-  // ─── Bloquear scroll / zoom / doble-tap ───────────────────
+  // ─── Bloquear scroll/zoom ──────────────────────────────────
   document.addEventListener('touchstart', e => {
-    if (e.touches.length > 1) e.preventDefault();
-  }, { passive: false });
-
-  document.addEventListener('touchmove', e => {
-    e.preventDefault();
-  }, { passive: false });
-
-  let lastTap = 0;
+    if (e.touches.length>1) e.preventDefault();
+  }, {passive:false});
+  document.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
+  let lastTap=0;
   document.addEventListener('touchend', e => {
-    const now = Date.now();
-    if (now - lastTap < 300) e.preventDefault();
-    lastTap = now;
-  }, { passive: false });
+    const now=Date.now();
+    if (now-lastTap<300) e.preventDefault();
+    lastTap=now;
+  }, {passive:false});
 
   // ─── Confeti ──────────────────────────────────────────────
   function celebrate() {
     const cel = document.getElementById('confetti');
-    cel.width  = window.innerWidth;
-    cel.height = window.innerHeight;
+    cel.width=window.innerWidth; cel.height=window.innerHeight;
     cel.classList.add('active');
     const ctx    = cel.getContext('2d');
-    const colors = ['#FFD700','#FF69B4','#87CEEB','#98FB98','#FFB6C1','#DDA0DD','#FF8C00','#FFF'];
-    const pieces = Array.from({ length: 150 }, () => ({
-      x: Math.random() * cel.width,
-      y: -20 - Math.random() * cel.height * .5,
-      w: 7 + Math.random() * 10,
-      h: 4 + Math.random() * 6,
-      color: colors[(Math.random() * colors.length) | 0],
-      a: Math.random() * Math.PI * 2,
-      spin: (Math.random() - .5) * .2,
-      vy: 2.5 + Math.random() * 4,
-      vx: (Math.random() - .5) * 2.5,
-      op: 1,
+    const colors = BABY_GENDER==='girl'
+      ? ['#FF69B4','#FF1493','#FFB6C1','#FF80B0','#FFD0E0','#FFF','#FFE0E8']
+      : BABY_GENDER==='boy'
+      ? ['#87CEEB','#4169E1','#00BFFF','#B0D0FF','#E0EEFF','#FFF','#C0D8FF']
+      : ['#FFD700','#FF69B4','#87CEEB','#98FB98','#DDA0DD','#FFF','#FF8C00'];
+    const pieces = Array.from({length:160}, () => ({
+      x:  Math.random()*cel.width,
+      y: -20-Math.random()*cel.height*.5,
+      w: 6+Math.random()*10, h: 4+Math.random()*6,
+      color: colors[(Math.random()*colors.length)|0],
+      a: Math.random()*Math.PI*2,
+      spin:(Math.random()-.5)*.22,
+      vy:3+Math.random()*4, vx:(Math.random()-.5)*2.5,
+      op:1,
     }));
-    let frame = 0;
+    let frame=0;
     (function tick() {
-      ctx.clearRect(0, 0, cel.width, cel.height);
+      ctx.clearRect(0,0,cel.width,cel.height);
       frame++;
-      let alive = false;
+      let alive=false;
       for (const p of pieces) {
-        p.x += p.vx; p.y += p.vy; p.a += p.spin;
-        if (frame > 100) p.op = Math.max(0, p.op - .013);
-        if (p.y < cel.height + 30) alive = true;
-        ctx.save();
-        ctx.globalAlpha = p.op;
-        ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
-        ctx.rotate(p.a);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        p.x+=p.vx; p.y+=p.vy; p.a+=p.spin;
+        if (frame>80) p.op=Math.max(0,p.op-.015);
+        if (p.y<cel.height+30) alive=true;
+        ctx.save(); ctx.globalAlpha=p.op;
+        ctx.translate(p.x+p.w/2,p.y+p.h/2); ctx.rotate(p.a);
+        ctx.fillStyle=p.color;
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
         ctx.restore();
       }
-      if (alive && frame < 320) requestAnimationFrame(tick);
+      if (alive&&frame<280) requestAnimationFrame(tick);
       else cel.classList.remove('active');
     })();
   }
