@@ -302,13 +302,17 @@
   // ═══════════════════════════════════════════════════════════
   //  ✏️  CONFIGURACIÓN DEL GÉNERO
   //  Cambia 'unknown' → 'boy' o 'girl',
-  //  o usa URL: ?gender=boy  /  ?gender=girl
+  //  o usa URL: ?gender=ImJveSI=  /  ?gender=Imdpcmwi
   // ═══════════════════════════════════════════════════════════
   const GENDER_FALLBACK = 'unknown';
   // ═══════════════════════════════════════════════════════════
 
-  const urlGender   = new URLSearchParams(location.search).get('gender');
-  const BABY_GENDER = ['boy','girl'].includes(urlGender) ? urlGender : GENDER_FALLBACK;
+  const GENDER_TOKENS = new Map([
+    ['ImJveSI=', 'boy'],
+    ['Imdpcmwi', 'girl'],
+  ]);
+  const genderToken = new URLSearchParams(location.search).get('gender');
+  const BABY_GENDER = GENDER_TOKENS.get(genderToken) || GENDER_FALLBACK;
 
   if (BABY_GENDER === 'girl') {
     document.getElementById('last-icon').dataset.src = 'icons/icon8_girl.png';
