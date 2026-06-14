@@ -49,15 +49,15 @@
     .shape {
       position: absolute;
       opacity: 0;
-      animation: floatUp linear infinite;
+      animation: floatDown linear infinite;
       font-style: normal;
     }
 
-    @keyframes floatUp {
-      0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+    @keyframes floatDown {
+      0%   { transform: translateY(-15vh) rotate(0deg);   opacity: 0; }
       10%  { opacity: .55; }
       90%  { opacity: .55; }
-      100% { transform: translateY(-15vh) rotate(360deg); opacity: 0; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
 
     /* ══════════════════════════════════════
