@@ -271,15 +271,15 @@
   <!-- Cuadrícula -->
   <div class="main">
     <div class="circles-grid" id="grid">
-      <div class="circle-cell"><img src="icons/icon1.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <div class="circle-cell"><img src="icons/icon2.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <div class="circle-cell"><img src="icons/icon3.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <div class="circle-cell"><img src="icons/icon4.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <div class="circle-cell"><img src="icons/icon5.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <div class="circle-cell"><img src="icons/icon6.png" class="icon-img"><canvas class="scratch"></canvas></div>
-      <div class="circle-cell"><img src="icons/icon7.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon1.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon2.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon3.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon4.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon5.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon6.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img data-src="icons/icon7.png" class="icon-img"><canvas class="scratch"></canvas></div>
       <div class="circle-cell" id="last-cell">
-        <img src="icons/icon8.png" class="icon-img" id="last-icon">
+        <img data-src="icons/icon8.png" class="icon-img" id="last-icon">
         <canvas class="scratch"></canvas>
       </div>
     </div>
@@ -311,7 +311,7 @@
   const BABY_GENDER = ['boy','girl'].includes(urlGender) ? urlGender : GENDER_FALLBACK;
 
   if (BABY_GENDER === 'girl') {
-    document.getElementById('last-icon').src = 'icons/icon8_girl.png';
+    document.getElementById('last-icon').dataset.src = 'icons/icon8_girl.png';
   }
 
   // ─── Formas flotantes del fondo ───────────────────────────
@@ -338,7 +338,7 @@
   const root = document.documentElement;
   const dpr  = window.devicePixelRatio || 1;
 
-  function updateLayout() {
+  function updateLayout(afterDraw) {
     const landscape = window.innerWidth > window.innerHeight;
     const cols = landscape ? 4 : 2;
     const rows = landscape ? 2 : 4;
@@ -360,6 +360,7 @@
 
     requestAnimationFrame(() => {
       canvases.forEach(c => { if (!c._done) initCanvas(c, cell); });
+      if (afterDraw) requestAnimationFrame(afterDraw);
     });
   }
 
@@ -514,10 +515,17 @@
     document.getElementById('reveal-msg').classList.remove('show');
   }
 
+  function loadHiddenIcons() {
+    document.querySelectorAll('.icon-img[data-src]').forEach(img => {
+      img.src = img.dataset.src;
+      img.removeAttribute('data-src');
+    });
+  }
+
   // ─── Init ─────────────────────────────────────────────────
   document.fonts.ready.then(() => {
-    updateLayout();
     canvases.forEach(c => attachScratch(c));
+    updateLayout(loadHiddenIcons);
   });
 
   let resizeTimer;
