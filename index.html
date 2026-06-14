@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#f8e0ec">
+  <meta name="theme-color" content="#d4a8c8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lato:ital,wght@0,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <title>¿Niño o Niña? — Rasca y Descubre</title>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     html {
       touch-action: none;
@@ -20,546 +24,446 @@
     }
 
     body {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       overflow: hidden;
       touch-action: none;
       overscroll-behavior: none;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      /* Fondo exterior: degradado azul-rosa */
-      background: linear-gradient(135deg, #b8d9f0 0%, #f5c2d8 100%);
-      font-family: 'Lato', sans-serif;
-    }
-
-    /* ═══════════════════════════════════════
-       TARJETA PRINCIPAL  (ratio 3:2)
-    ═══════════════════════════════════════ */
-    .card {
-      width: min(100vw, 150vh);
-      aspect-ratio: 3 / 2;
-      /* Fondo interior: degradado pastel suave */
-      background: linear-gradient(
-        110deg,
-        #d6edf8 0%,   #e6f3fb 10%,
-        #f9f3ec 30%,  #fefaf6 50%,
-        #fdf3f7 70%,  #fce8f0 90%,
-        #f8d8e8 100%
-      );
-      border: 2.5px dashed #c4a87a;
-      border-radius: 14px;
-      box-shadow: 0 6px 28px rgba(0,0,0,0.14);
-      display: flex;
       flex-direction: column;
-      overflow: hidden;
-      position: relative;
+      /* Fondo degradado azul → rosa */
+      background: linear-gradient(160deg, #a8d4ec 0%, #c8a8d8 40%, #e8a8bc 100%);
+      -webkit-user-select: none; user-select: none;
+      font-family: -apple-system, 'Segoe UI', sans-serif;
     }
 
-    /* Estrellas/corazones decorativos de fondo */
-    .card::before {
-      content: '★  ♥  ★  ♥  ★  ♥  ★  ♥  ★  ♥  ★  ♥  ★';
-      position: absolute;
-      top: 27%;
-      left: 0; right: 0;
-      text-align: center;
-      font-size: clamp(0.4rem, 1vw, 0.7rem);
-      color: rgba(180,140,100,0.18);
-      letter-spacing: 0.6em;
-      pointer-events: none;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    /* ═══════════════════════════════════════
+    /* ══════════════════════════════════════
        CABECERA
-    ═══════════════════════════════════════ */
-    .card-header {
-      height: 29%;
+    ══════════════════════════════════════ */
+    .header {
       flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.5% 1% 0;
-      gap: 0.8%;
-    }
-
-    .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
-      flex: 1;
-      min-height: 0;
+      padding: 1.5vmin 3vmin 1vmin;
+      background: rgba(255,250,248,0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
     }
 
     .balloon {
-      height: 100%;
-      max-height: 16vh;
+      height: 9vmin;
+      max-height: 60px;
       object-fit: contain;
       flex-shrink: 0;
       mix-blend-mode: multiply;
     }
 
-    .title-area {
+    .header-center {
       flex: 1;
-      min-width: 0;
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4%;
-      padding: 0 1%;
+      padding: 0 2vmin;
+      line-height: 1;
     }
 
-    .card-title {
+    .title {
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(1.1rem, 3.6vw, 2.5rem);
-      line-height: 1;
+      font-size: clamp(1.3rem, 6.5vmin, 3rem);
       white-space: nowrap;
     }
-    .t-q    { color: #8a6840; }
-    .t-nino { color: #3d90c8; }
-    .t-o    { color: #8a6840; }
-    .t-nina { color: #d45080; }
+    .t-q    { color: #7a5030; }
+    .t-nino { color: #1a70c0; }
+    .t-o    { color: #7a5030; }
+    .t-nina { color: #c02060; }
 
-    .deco-line {
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      color: #b89a60;
-      font-size: clamp(0.5rem, 1.1vw, 0.8rem);
-    }
-    .deco-line span { letter-spacing: 0.3em; }
-
-    .card-subtitle {
-      font-size: clamp(0.32rem, 0.95vw, 0.65rem);
-      letter-spacing: 0.16em;
-      color: #8a6840;
+    .subtitle {
+      font-size: clamp(0.38rem, 1.6vmin, 0.65rem);
+      letter-spacing: 0.15em;
+      color: #7a5030;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.6em;
-      width: 70%;
-      justify-content: center;
-    }
-    .card-subtitle::before,
-    .card-subtitle::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, transparent, #c4a87a, transparent);
+      margin-top: 0.5vmin;
     }
 
-    /* ═══════════════════════════════════════
-       CUERPO: OSO | CÍRCULOS | CONEJO
-    ═══════════════════════════════════════ */
-    .card-body {
+    /* En landscape el subtítulo ocupa demasiado espacio — lo ocultamos */
+    @media (orientation: landscape) {
+      .subtitle { display: none; }
+      .balloon  { height: 7vmin; max-height: 48px; }
+    }
+
+    /* ══════════════════════════════════════
+       ZONA PRINCIPAL (GRID + MASCOTAS)
+    ══════════════════════════════════════ */
+    .main {
       flex: 1;
       min-height: 0;
       display: flex;
       align-items: center;
-      padding: 0.5% 1.2% 1.8%;
-      gap: 0.8%;
+      justify-content: center;
+      padding: 1.8vmin;
+      gap: 1vmin;
     }
 
+    /* Mascotas: solo visibles en landscape, en los lados del grid */
     .mascot {
+      display: none;
       flex-shrink: 0;
-      width: 12.5%;
-      height: 100%;
       object-fit: contain;
       object-position: bottom center;
       mix-blend-mode: multiply;
     }
-
-    /* ═══════════════════════════════════════
-       GRID DE CÍRCULOS (4 × 2)
-       Aspect-ratio: 1 en cada celda → siempre círculo
-    ═══════════════════════════════════════ */
-    .circles-grid {
-      flex: 1;
-      min-width: 0;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 3.5%;
-      align-content: center;
+    @media (orientation: landscape) {
+      .mascot {
+        display: block;
+        width: 9vw;
+        max-width: 80px;
+        height: 100%;
+        max-height: 200px;
+      }
     }
 
+    /* ══════════════════════════════════════
+       GRID DE CÍRCULOS
+       Portrait → 2 col × 4 fil
+       Landscape → 4 col × 2 fil
+       Las variables --cell y --gap las calcula JS
+    ══════════════════════════════════════ */
+    .circles-grid {
+      display: grid;
+      /* Valor por defecto; JS lo sobreescribe con --cell y --cols */
+      grid-template-columns: repeat(var(--cols, 2), var(--cell, 140px));
+      gap: var(--gap, 8px);
+    }
+
+    /* ══════════════════════════════════════
+       CELDA CIRCULAR
+    ══════════════════════════════════════ */
     .circle-cell {
-      aspect-ratio: 1;
-      position: relative;
+      width:  var(--cell, 140px);
+      height: var(--cell, 140px);
       border-radius: 50%;
+      position: relative;
       overflow: hidden;
       touch-action: none;
-      /* Sombra suave tipo relieve */
       box-shadow:
-        0 3px 10px rgba(0,0,0,0.18),
-        inset 0 -2px 4px rgba(0,0,0,0.08);
+        0 5px 14px rgba(0,0,0,0.26),
+        inset 0 2px 5px rgba(255,255,255,0.35),
+        inset 0 -2px 5px rgba(0,0,0,0.10);
     }
 
-    /* Imagen del icono (debajo del canvas) */
+    /* Imagen del icono (fondo) */
     .icon-img {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
       pointer-events: none;
-      user-select: none;
       -webkit-user-drag: none;
     }
 
     /* Capa de revelado de género (último círculo) */
-    .gender-reveal-layer {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    .gender-layer {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       gap: 4%;
     }
-    .gender-reveal-layer.boy  {
-      background: radial-gradient(circle at 38% 35%, #90caf9, #1565c0);
-    }
-    .gender-reveal-layer.girl {
-      background: radial-gradient(circle at 38% 35%, #f48fb1, #880e4f);
-    }
-    .g-icon  {
-      font-size: 2.2em;
-      line-height: 1;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
-    .g-label {
-      font-size: 0.62em;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: 0.05em;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.45);
-    }
+    .gender-layer.boy  { background: radial-gradient(circle at 38% 35%, #90caf9, #1565c0); }
+    .gender-layer.girl { background: radial-gradient(circle at 38% 35%, #f48fb1, #880e4f); }
+    .g-icon  { font-size: 2.2em; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+    .g-label { font-size: .6em; font-weight: 900; color: #fff; letter-spacing: .05em; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
 
     /* Canvas de rascado (encima de todo) */
-    .scratch-canvas {
-      position: absolute;
-      inset: 0;
+    .scratch {
+      position: absolute; inset: 0;
       width: 100%; height: 100%;
       touch-action: none;
       cursor: crosshair;
-      border-radius: 50%;
     }
 
-    /* ═══════════════════════════════════════
-       AVISO DE ROTACIÓN (retrato)
-    ═══════════════════════════════════════ */
-    #portrait-hint {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(8, 8, 24, 0.93);
-      z-index: 900;
-      flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 1rem;
-      color: #fff; text-align: center; padding: 2rem;
-    }
-    .ph-icon {
-      font-size: 3.5rem;
-      animation: tilt 1.6s ease-in-out infinite alternate;
-    }
-    @keyframes tilt {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(90deg); }
-    }
-    .ph-text { font-size: 1.05rem; max-width: 270px; line-height: 1.5; }
-    .ph-btn {
-      margin-top: 0.5rem;
-      padding: 0.6rem 1.5rem;
-      border: 1.5px solid rgba(255,255,255,0.4);
-      background: transparent; color: #fff;
-      border-radius: 999px; font-size: 0.9rem; cursor: pointer;
-    }
-    @media (orientation: portrait) { #portrait-hint { display: flex; } }
-
-    /* ═══════════════════════════════════════
+    /* ══════════════════════════════════════
        CONFETI
-    ═══════════════════════════════════════ */
+    ══════════════════════════════════════ */
     #confetti {
-      display: none;
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 800;
+      display: none; position: fixed; inset: 0;
+      pointer-events: none; z-index: 999;
     }
     #confetti.active { display: block; }
   </style>
 </head>
 <body>
 
-  <!-- Aviso de rotación -->
-  <div id="portrait-hint">
-    <div class="ph-icon">📱</div>
-    <p class="ph-text">Gira tu dispositivo en <strong>horizontal</strong> para la mejor experiencia</p>
-    <button class="ph-btn" onclick="this.parentElement.style.display='none'">Continuar de todas formas</button>
-  </div>
-
-  <!-- Tarjeta principal -->
-  <div class="card">
-
-    <!-- Cabecera -->
-    <header class="card-header">
-      <div class="header-top">
-        <img src="icons/balloon_blue.png" class="balloon" alt="">
-        <div class="title-area">
-          <h1 class="card-title">
-            <span class="t-q">¿ </span><span class="t-nino">Niño</span><span class="t-o"> o </span><span class="t-nina">Niña</span><span class="t-q"> ?</span>
-          </h1>
-          <div class="deco-line">
-            <span>★ &nbsp; ♥ &nbsp; ★</span>
-          </div>
-        </div>
-        <img src="icons/balloon_pink.png" class="balloon" alt="">
+  <!-- Cabecera -->
+  <header class="header">
+    <img src="icons/balloon_blue.png" class="balloon" alt="">
+    <div class="header-center">
+      <div class="title">
+        <span class="t-q">¿&nbsp;</span><span class="t-nino">Niño</span><span class="t-o">&nbsp;o&nbsp;</span><span class="t-nina">Niña</span><span class="t-q">&nbsp;?</span>
       </div>
-      <p class="card-subtitle">RASCA Y DESCUBRE EL SEXO DEL BEBÉ</p>
-    </header>
-
-    <!-- Cuerpo -->
-    <div class="card-body">
-      <img src="icons/bear.png"  class="mascot" alt="osito">
-
-      <div class="circles-grid">
-        <div class="circle-cell"><img src="icons/icon1.png" class="icon-img"><canvas class="scratch-canvas" data-index="0"></canvas></div>
-        <div class="circle-cell"><img src="icons/icon2.png" class="icon-img"><canvas class="scratch-canvas" data-index="1"></canvas></div>
-        <div class="circle-cell"><img src="icons/icon3.png" class="icon-img"><canvas class="scratch-canvas" data-index="2"></canvas></div>
-        <div class="circle-cell"><img src="icons/icon4.png" class="icon-img"><canvas class="scratch-canvas" data-index="3"></canvas></div>
-        <div class="circle-cell"><img src="icons/icon5.png" class="icon-img"><canvas class="scratch-canvas" data-index="4"></canvas></div>
-        <div class="circle-cell"><img src="icons/icon6.png" class="icon-img"><canvas class="scratch-canvas" data-index="5"></canvas></div>
-        <div class="circle-cell"><img src="icons/icon7.png" class="icon-img"><canvas class="scratch-canvas" data-index="6"></canvas></div>
-        <!-- Círculo 8: configurable niño/niña -->
-        <div class="circle-cell" id="last-cell">
-          <img src="icons/icon8.png" class="icon-img" id="last-icon">
-          <!-- La capa de género se inserta aquí por JS si está configurada -->
-          <canvas class="scratch-canvas" data-index="7"></canvas>
-        </div>
-      </div>
-
-      <img src="icons/bunny.png" class="mascot" alt="conejita">
+      <p class="subtitle">— RASCA Y DESCUBRE EL SEXO DEL BEBÉ —</p>
     </div>
+    <img src="icons/balloon_pink.png" class="balloon" alt="">
+  </header>
+
+  <!-- Zona principal -->
+  <div class="main">
+    <img src="icons/bear.png"  class="mascot" alt="">
+
+    <div class="circles-grid" id="grid">
+      <div class="circle-cell"><img src="icons/icon1.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img src="icons/icon2.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img src="icons/icon3.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img src="icons/icon4.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img src="icons/icon5.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img src="icons/icon6.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <div class="circle-cell"><img src="icons/icon7.png" class="icon-img"><canvas class="scratch"></canvas></div>
+      <!-- Último círculo: configurable niño/niña -->
+      <div class="circle-cell" id="last-cell">
+        <img src="icons/icon8.png" class="icon-img" id="last-icon">
+        <canvas class="scratch"></canvas>
+      </div>
+    </div>
+
+    <img src="icons/bunny.png" class="mascot" alt="">
   </div>
 
   <canvas id="confetti"></canvas>
 
   <script>
-    // ═══════════════════════════════════════════════════════════════
-    //  ✏️  CONFIGURACIÓN DEL GÉNERO
-    //
-    //    'unknown'  → Al raspar el último círculo se ve el icono
-    //    'boy'      → Revela ¡ES NIÑO! en azul
-    //    'girl'     → Revela ¡ES NIÑA! en rosa
-    //
-    //  Puedes configurarlo también por URL sin tocar código:
-    //    jugarte.es/baby/?gender=girl
-    //    jugarte.es/baby/?gender=boy
-    // ═══════════════════════════════════════════════════════════════
-    const GENDER_FALLBACK = 'unknown';
-    // ═══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════
+  //  ✏️  GÉNERO DEL BEBÉ
+  //  Cambia 'unknown' por 'boy' o 'girl',
+  //  o usa la URL: ?gender=boy  /  ?gender=girl
+  // ═══════════════════════════════════════════════════════════
+  const GENDER_FALLBACK = 'unknown';
+  // ═══════════════════════════════════════════════════════════
 
-    const urlGender  = new URLSearchParams(location.search).get('gender');
-    const BABY_GENDER = ['boy','girl'].includes(urlGender) ? urlGender : GENDER_FALLBACK;
+  const urlGender  = new URLSearchParams(location.search).get('gender');
+  const BABY_GENDER = ['boy','girl'].includes(urlGender) ? urlGender : GENDER_FALLBACK;
 
-    // Cambiar el icono del último círculo según el género configurado:
-    //   'boy'  → icon8.png     (zapatilla azul - ya por defecto)
-    //   'girl' → icon8_girl.png (botita rosa de la hoja de niña)
-    if (BABY_GENDER === 'girl') {
-      document.getElementById('last-icon').src = 'icons/icon8_girl.png';
-    }
+  // Aplicar icono de niña si está configurado
+  if (BABY_GENDER === 'girl') {
+    document.getElementById('last-icon').src = 'icons/icon8_girl.png';
+  }
 
-    // ─── Canvas setup ────────────────────────────────────────────
-    const dpr      = window.devicePixelRatio || 1;
-    const canvases = [...document.querySelectorAll('.scratch-canvas')];
+  // ─── Layout dinámico ──────────────────────────────────────
+  const root = document.documentElement;
+  const dpr  = window.devicePixelRatio || 1;
 
-    function resizeCanvas(canvas) {
-      const { width, height } = canvas.getBoundingClientRect();
-      canvas.width  = Math.round(width  * dpr);
-      canvas.height = Math.round(height * dpr);
-    }
+  function updateLayout() {
+    const landscape = window.innerWidth > window.innerHeight;
+    const cols = landscape ? 4 : 2;
+    const rows = landscape ? 2 : 4;
 
-    function drawGold(canvas) {
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width, H = canvas.height;
-      const cx = W / 2, cy = H / 2;
-      const r  = Math.min(W, H) / 2;
+    // Espacio disponible (descontando cabecera y padding)
+    const header  = document.querySelector('.header');
+    const headerH = header.getBoundingClientRect().height;
+    const PAD     = Math.min(14, window.innerWidth * 0.025);
 
-      ctx.clearRect(0, 0, W, H);
+    let availW = window.innerWidth  - PAD * 2;
+    let availH = window.innerHeight - headerH - PAD * 2;
 
-      // Degradado dorado radial con iluminación superior-izquierda
-      const g = ctx.createRadialGradient(cx * 0.65, cy * 0.60, r * 0.03, cx, cy, r);
-      g.addColorStop(0.00, '#FFFAAA');
-      g.addColorStop(0.18, '#FFE000');
-      g.addColorStop(0.45, '#FFB300');
-      g.addColorStop(0.75, '#E07800');
-      g.addColorStop(1.00, '#7A4500');
+    // En landscape, las mascotas consumen ~9vw en cada lado
+    if (landscape) availW -= Math.min(160, window.innerWidth * 0.18) + PAD;
 
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = g;
-      ctx.fill();
+    const GAP = Math.round(Math.max(5, Math.min(12, availW * 0.025)));
 
-      // Brillo (destello superior-izquierdo)
-      ctx.save();
-      ctx.beginPath();
-      ctx.ellipse(cx * 0.64, cy * 0.58, r * 0.26, r * 0.16, -0.6, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.fill();
-      ctx.restore();
+    // Tamaño de celda = el menor de: ancho disponible÷cols, alto disponible÷filas
+    const byW = (availW - GAP * (cols - 1)) / cols;
+    const byH = (availH - GAP * (rows - 1)) / rows;
+    const cell = Math.floor(Math.min(byW, byH));
 
-      // Borde interior oscuro (relieve)
-      ctx.beginPath();
-      ctx.arc(cx, cy, r - dpr, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(80,35,0,0.18)';
-      ctx.lineWidth = dpr * 2;
-      ctx.stroke();
+    root.style.setProperty('--cols', cols);
+    root.style.setProperty('--cell', cell + 'px');
+    root.style.setProperty('--gap',  GAP  + 'px');
 
-      // Estrella decorativa
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'rgba(80,35,0,0.40)';
-      ctx.font = `bold ${r * 0.42}px sans-serif`;
-      ctx.fillText('✦', cx, cy);
-    }
-
-    function attachScratch(canvas) {
-      const ctx = canvas.getContext('2d');
-      let active = false;
-
-      function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const src  = e.touches ? e.touches[0] : e;
-        return {
-          x: (src.clientX - rect.left) * dpr,
-          y: (src.clientY - rect.top)  * dpr,
-        };
-      }
-
-      function erase(e) {
-        if (!active || canvas._done) return;
-        e.preventDefault();
-        const { x, y } = getPos(e);
-        const r = Math.min(canvas.width, canvas.height) / 2;
-        // Pincel mínimo de 24 px CSS para que sea cómodo con el dedo
-        const brushR = Math.max(24 * dpr, r * 0.40);
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(x, y, brushR, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalCompositeOperation = 'source-over';
-        checkReveal(canvas, r);
-      }
-
-      canvas.addEventListener('mousedown',  e => { active = true;  erase(e); });
-      canvas.addEventListener('mousemove',  erase);
-      canvas.addEventListener('mouseup',    () => active = false);
-      canvas.addEventListener('mouseleave', () => active = false);
-      canvas.addEventListener('touchstart', e => { e.preventDefault(); active = true;  erase(e); }, { passive: false });
-      canvas.addEventListener('touchmove',  e => { e.preventDefault(); erase(e); },                 { passive: false });
-      canvas.addEventListener('touchend',   () => active = false);
-    }
-
-    function checkReveal(canvas, r) {
-      if (canvas._done) return;
-      const ctx = canvas.getContext('2d');
-      const { width: W, height: H } = canvas;
-      const cx = W / 2, cy = H / 2;
-      const data = ctx.getImageData(0, 0, W, H).data;
-      let inside = 0, transparent = 0;
-      for (let i = 0; i < data.length; i += 16) {
-        const pi = i >> 2;
-        const px = pi % W, py = (pi / W) | 0;
-        if ((px - cx) ** 2 + (py - cy) ** 2 <= r * r) {
-          inside++;
-          if (data[i + 3] < 128) transparent++;
-        }
-      }
-      if (inside > 0 && transparent / inside > 0.55) {
-        canvas._done = true;
-        canvas.style.transition = 'opacity 0.55s ease';
-        canvas.style.opacity = '0';
-        setTimeout(() => { canvas.style.display = 'none'; }, 560);
-        if (canvases.every(c => c._done)) celebrate();
-      }
-    }
-
-    // ─── Init ────────────────────────────────────────────────────
-    function initAll() {
-      canvases.forEach(c => {
-        resizeCanvas(c);
-        drawGold(c);
-        attachScratch(c);
-      });
-    }
-
-    // Esperar a que la fuente y el layout estén listos
-    document.fonts.ready.then(initAll);
-
-    // Re-init en resize (solo los no revelados)
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        canvases.forEach(c => { if (!c._done) { resizeCanvas(c); drawGold(c); } });
-      }, 200);
+    // Re-pintar canvases con nuevo tamaño
+    requestAnimationFrame(() => {
+      canvases.forEach(c => { if (!c._done) initCanvas(c, cell); });
     });
+  }
 
-    // ─── Bloquear scroll / zoom nativos ──────────────────────────
-    document.addEventListener('touchstart', e => {
-      if (e.touches.length > 1) e.preventDefault(); // bloquea pinch
-    }, { passive: false });
-    document.addEventListener('touchmove', e => {
-      e.preventDefault(); // bloquea scroll
-    }, { passive: false });
-    let lastTap = 0;
-    document.addEventListener('touchend', e => {
-      const now = Date.now();
-      if (now - lastTap < 300) e.preventDefault(); // bloquea doble-tap zoom
-      lastTap = now;
-    }, { passive: false });
+  // ─── Canvas ───────────────────────────────────────────────
+  const canvases = [...document.querySelectorAll('.scratch')];
 
-    // ─── Confeti ─────────────────────────────────────────────────
-    function celebrate() {
-      const cel = document.getElementById('confetti');
-      cel.width = window.innerWidth;
-      cel.height = window.innerHeight;
-      cel.classList.add('active');
-      const ctx = cel.getContext('2d');
-      const colors = ['#FFD700','#FF69B4','#87CEEB','#98FB98','#FFB6C1','#DDA0DD','#FF8C00','#FFF'];
-      const pieces = Array.from({ length: 140 }, () => ({
-        x:  Math.random() * cel.width,
-        y: -20 - Math.random() * cel.height * 0.5,
-        w: 7 + Math.random() * 10, h: 4 + Math.random() * 6,
-        color: colors[(Math.random() * colors.length) | 0],
-        a:    Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 0.2,
-        vy:   2.5 + Math.random() * 4, vx: (Math.random() - 0.5) * 2.5,
-        op:   1,
-      }));
-      let frame = 0;
-      (function tick() {
-        ctx.clearRect(0, 0, cel.width, cel.height);
-        frame++;
-        let alive = false;
-        for (const p of pieces) {
-          p.x += p.vx; p.y += p.vy; p.a += p.spin;
-          if (frame > 100) p.op = Math.max(0, p.op - 0.013);
-          if (p.y < cel.height + 30) alive = true;
-          ctx.save();
-          ctx.globalAlpha = p.op;
-          ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
-          ctx.rotate(p.a);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-          ctx.restore();
-        }
-        if (alive && frame < 320) requestAnimationFrame(tick);
-        else cel.classList.remove('active');
-      })();
+  function initCanvas(canvas, cell) {
+    const size = Math.round(cell * dpr);
+    canvas.width  = size;
+    canvas.height = size;
+    drawGold(canvas);
+  }
+
+  function drawGold(canvas) {
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W / 2, cy = H / 2, r = W / 2;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Degradado dorado con iluminación superior-izquierda
+    const g = ctx.createRadialGradient(cx * .65, cy * .60, r * .03, cx, cy, r);
+    g.addColorStop(0.00, '#FFFAAA');
+    g.addColorStop(0.18, '#FFE000');
+    g.addColorStop(0.45, '#FFB300');
+    g.addColorStop(0.75, '#E07800');
+    g.addColorStop(1.00, '#7A4500');
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // Brillo
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx * .64, cy * .58, r * .26, r * .16, -.6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,.55)';
+    ctx.fill();
+    ctx.restore();
+
+    // Borde interior oscuro (relieve)
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - dpr, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(80,35,0,.18)';
+    ctx.lineWidth = dpr * 2;
+    ctx.stroke();
+
+    // Estrella decorativa
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(80,35,0,.40)';
+    ctx.font = `bold ${r * .44}px sans-serif`;
+    ctx.fillText('✦', cx, cy);
+  }
+
+  function attachScratch(canvas) {
+    const ctx = canvas.getContext('2d');
+    let active = false;
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const s = e.touches ? e.touches[0] : e;
+      return {
+        x: (s.clientX - rect.left) * dpr,
+        y: (s.clientY - rect.top)  * dpr,
+      };
     }
+
+    function erase(e) {
+      if (!active || canvas._done) return;
+      e.preventDefault();
+      const { x, y } = getPos(e);
+      const r = canvas.width / 2;
+      // Pincel: mínimo 22px CSS, o 42% del radio
+      const brushR = Math.max(22 * dpr, r * .42);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, brushR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      checkReveal(canvas, r);
+    }
+
+    canvas.addEventListener('mousedown',  e => { active = true;  erase(e); });
+    canvas.addEventListener('mousemove',  erase);
+    canvas.addEventListener('mouseup',    () => active = false);
+    canvas.addEventListener('mouseleave', () => active = false);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); active = true;  erase(e); }, { passive: false });
+    canvas.addEventListener('touchmove',  e => { e.preventDefault(); erase(e); },                 { passive: false });
+    canvas.addEventListener('touchend',   () => active = false);
+  }
+
+  function checkReveal(canvas, r) {
+    if (canvas._done) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W / 2, cy = H / 2;
+    const data = ctx.getImageData(0, 0, W, H).data;
+    let inside = 0, gone = 0;
+    for (let i = 0; i < data.length; i += 16) {
+      const pi = i >> 2;
+      const px = pi % W, py = (pi / W) | 0;
+      if ((px - cx) ** 2 + (py - cy) ** 2 <= r * r) {
+        inside++;
+        if (data[i + 3] < 128) gone++;
+      }
+    }
+    if (inside > 0 && gone / inside > .55) {
+      canvas._done = true;
+      canvas.style.transition = 'opacity .55s ease';
+      canvas.style.opacity = '0';
+      setTimeout(() => { canvas.style.display = 'none'; }, 560);
+      if (canvases.every(c => c._done)) celebrate();
+    }
+  }
+
+  // ─── Init ─────────────────────────────────────────────────
+  document.fonts.ready.then(() => {
+    updateLayout();
+    canvases.forEach(c => attachScratch(c));
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateLayout, 150);
+  });
+
+  // ─── Bloquear scroll / zoom / doble-tap ───────────────────
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('touchmove', e => {
+    e.preventDefault();
+  }, { passive: false });
+
+  let lastTap = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTap < 300) e.preventDefault();
+    lastTap = now;
+  }, { passive: false });
+
+  // ─── Confeti ──────────────────────────────────────────────
+  function celebrate() {
+    const cel = document.getElementById('confetti');
+    cel.width  = window.innerWidth;
+    cel.height = window.innerHeight;
+    cel.classList.add('active');
+    const ctx    = cel.getContext('2d');
+    const colors = ['#FFD700','#FF69B4','#87CEEB','#98FB98','#FFB6C1','#DDA0DD','#FF8C00','#FFF'];
+    const pieces = Array.from({ length: 150 }, () => ({
+      x: Math.random() * cel.width,
+      y: -20 - Math.random() * cel.height * .5,
+      w: 7 + Math.random() * 10,
+      h: 4 + Math.random() * 6,
+      color: colors[(Math.random() * colors.length) | 0],
+      a: Math.random() * Math.PI * 2,
+      spin: (Math.random() - .5) * .2,
+      vy: 2.5 + Math.random() * 4,
+      vx: (Math.random() - .5) * 2.5,
+      op: 1,
+    }));
+    let frame = 0;
+    (function tick() {
+      ctx.clearRect(0, 0, cel.width, cel.height);
+      frame++;
+      let alive = false;
+      for (const p of pieces) {
+        p.x += p.vx; p.y += p.vy; p.a += p.spin;
+        if (frame > 100) p.op = Math.max(0, p.op - .013);
+        if (p.y < cel.height + 30) alive = true;
+        ctx.save();
+        ctx.globalAlpha = p.op;
+        ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+        ctx.rotate(p.a);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (alive && frame < 320) requestAnimationFrame(tick);
+      else cel.classList.remove('active');
+    })();
+  }
   </script>
 </body>
 </html>
