@@ -378,29 +378,65 @@
     const cx = W/2, cy = H/2, r = W/2;
     ctx.clearRect(0, 0, W, H);
 
-    const g = ctx.createRadialGradient(cx*.65, cy*.60, r*.03, cx, cy, r);
-    g.addColorStop(0.00, '#FFFAAA');
-    g.addColorStop(0.18, '#FFE000');
-    g.addColorStop(0.45, '#FFB300');
-    g.addColorStop(0.75, '#E07800');
-    g.addColorStop(1.00, '#7A4500');
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-    ctx.fillStyle = g; ctx.fill();
-
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(cx*.64, cy*.58, r*.26, r*.16, -.6, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,.56)'; ctx.fill();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.clip();
+
+    // ── 1. Base: oro apagado cálido (igual que la foto de referencia) ──
+    ctx.fillStyle = '#A89022';
+    ctx.fillRect(0, 0, W, H);
+
+    // ── 2. Banda horizontal ligeramente más oscura en el centro ──
+    const band = ctx.createLinearGradient(0, 0, 0, H);
+    band.addColorStop(0.00, 'rgba(220,185, 20, 0.25)');
+    band.addColorStop(0.38, 'rgba( 50,  30,  0, 0.22)');
+    band.addColorStop(0.50, 'rgba( 30,  15,  0, 0.28)');
+    band.addColorStop(0.62, 'rgba( 50,  30,  0, 0.22)');
+    band.addColorStop(1.00, 'rgba(220,185, 20, 0.25)');
+    ctx.fillStyle = band;
+    ctx.fillRect(0, 0, W, H);
+
+    // ── 3. GLITTER: puntos brillantes dispersos (efecto de la foto) ──
+    // Generador pseudoaleatorio determinista para que no cambie al redibujar
+    let sd = (W * 6271 + H * 2953 + 99371) >>> 0;
+    const rnd = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
+
+    const SPARKS = Math.min(900, Math.floor((r / dpr) * (r / dpr) * 0.22));
+    for (let i = 0; i < SPARKS; i++) {
+      // Distribución uniforme dentro del círculo
+      const a = rnd() * Math.PI * 2;
+      const d = Math.sqrt(rnd()) * r * 0.96;
+      const x = cx + Math.cos(a) * d;
+      const y = cy + Math.sin(a) * d;
+
+      // Tamaño variable: mayoría pequeños, algunos más grandes
+      const big = rnd() < 0.06; // 6% son destellos grandes
+      const sz  = big ? (1.5 + rnd() * 2.0) * dpr : (0.3 + rnd() * 1.0) * dpr;
+      const al  = big ? 0.70 + rnd() * 0.30 : 0.25 + rnd() * 0.60;
+      const bri = Math.floor(220 + rnd() * 35); // blanco-crema
+
+      ctx.beginPath();
+      ctx.arc(x, y, sz, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,${bri},${al.toFixed(2)})`;
+      ctx.fill();
+    }
+
+    // ── 4. Sombra sutil en el borde (definición sin esfera) ──
+    const edge = ctx.createRadialGradient(cx, cy, r * 0.78, cx, cy, r);
+    edge.addColorStop(0, 'rgba(0,0,0,0)');
+    edge.addColorStop(1, 'rgba(0,0,0,0.22)');
+    ctx.fillStyle = edge;
+    ctx.fillRect(0, 0, W, H);
+
     ctx.restore();
 
-    ctx.beginPath(); ctx.arc(cx, cy, r-dpr, 0, Math.PI*2);
-    ctx.strokeStyle = 'rgba(80,35,0,.20)';
-    ctx.lineWidth = dpr*2; ctx.stroke();
-
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(80,35,0,.42)';
-    ctx.font = `bold ${r*.44}px sans-serif`;
-    ctx.fillText('✦', cx, cy);
+    // ── 5. Texto "RASCA" embebido en el glitter ──
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle    = 'rgba(60,38,0,0.45)';
+    ctx.font         = `800 ${r * 0.19}px 'Nunito', sans-serif`;
+    ctx.fillText('RASCA', cx, cy);
   }
 
   function attachScratch(canvas) {
